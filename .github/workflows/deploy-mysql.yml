@@ -27,7 +27,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           echo "Starting deployment on ${HOST}"
-          cd /path/to/mysql/source
+          cd /path/to/mysql/source/mysql
           
           # stop
           docker-compose down
