@@ -15,8 +15,9 @@ jobs:
 
     - name: Copy source code to server
       run: |
-        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
-
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
     - name: Deploy to Ubuntu Server
       uses: appleboy/ssh-action@master
       with:
