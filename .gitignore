@@ -14,6 +14,9 @@ target/
 .sts4-cache
 ### Confifg ###
 *-local.properties
+*-local.yml
+src/main/resources/application-local.yml
+src/main/resources/application-local.properties
 .docker
 /logs
 *.env
