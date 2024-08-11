@@ -14,7 +14,9 @@ services:
       - "${MYSQL_PORT}:${MYSQL_PORT}"
     volumes:
       - mysql_data:/var/lib/mysql
-      
+    networks:
+      - mysql_network
+
 volumes:
   mysql_data:
     driver: local
