@@ -17,7 +17,7 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
         chmod 600 private_key.pem
-        scp -o StrictHostKeyChecking=no -i private_key.pem -r /path/to/local/source/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r .docker/mysql ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
 
     - name: Deploy to Ubuntu Server
       uses: appleboy/ssh-action@master
@@ -26,8 +26,19 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/mysql/source/.docker/mysql
+          echo "Starting deployment on ${HOST}"
+          cd /path/to/mysql/source
+          
+          # stop
           docker-compose down
+          
+          # remove
           docker rmi $(docker images -q mysql) || true
+          
+          # Build lại Docker images
           docker-compose build
+          
+          # restart
           docker-compose up -d
+          
+          echo "Deployment finished on ${HOST}"
