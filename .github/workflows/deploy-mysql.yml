@@ -17,7 +17,7 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
         chmod 600 private_key.pem
-        scp -o StrictHostKeyChecking=no -i private_key.pem -r ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r /path/to/local/source/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
 
     - name: Deploy to Ubuntu Server
       uses: appleboy/ssh-action@master
