@@ -1,9 +1,9 @@
-name: Deploy phpMyAdmin
+name: Deploy PhpMyAdmin
 
 on:
   push:
     branches:
-      - devops-database-phpadmin-deploy
+      - devops-database-phpmyadmin-deploy
 
 jobs:
   deploy-phpmyadmin:
@@ -15,7 +15,9 @@ jobs:
 
     - name: Copy source code to server
       run: |
-        scp -o StrictHostKeyChecking=no -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/phpmyadmin/source/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r .docker/phpmyadmin ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/phpmyadmin/source/
 
     - name: Deploy to Ubuntu Server
       uses: appleboy/ssh-action@master
@@ -24,8 +26,19 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/phpmyadmin/source/.docker/phpmyadmin
+          echo "Starting deployment on ${HOST}"
+          cd /path/to/phpmyadmin/source/phpmyadmin
+          
+          # stop
           docker-compose down
+          
+          # remove
           docker rmi $(docker images -q phpmyadmin) || true
+          
+          # Build lại Docker images
           docker-compose build
+          
+          # restart
           docker-compose up -d
+          
+          echo "Deployment finished on ${HOST}"
