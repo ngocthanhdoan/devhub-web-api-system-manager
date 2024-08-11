@@ -15,7 +15,7 @@ jobs:
 
     - name: Copy source code to server
       run: |
-        scp -o StrictHostKeyChecking=no -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
+        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/mysql/source/
 
     - name: Deploy to Ubuntu Server
       uses: appleboy/ssh-action@master
@@ -28,5 +28,4 @@ jobs:
           docker-compose down
           docker rmi $(docker images -q mysql) || true
           docker-compose build
-          docker-compose up -
-
+          docker-compose up -d
