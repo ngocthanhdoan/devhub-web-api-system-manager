@@ -11,22 +11,25 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "${MYSQL_PORT}:${MYSQL_PORT}"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - mysql_network
 
   phpmyadmin:
-    build:
-      context: .
+    image: phpmyadmin/phpmyadmin:latest
     environment:
-      PMA_HOST: ${PMA_HOST}
-      PMA_PORT: ${PMA_PORT}
-      PMA_USER: ${PMA_USER}
-      PMA_PASSWORD: ${PMA_PASSWORD}
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "${PHPMYADMIN_PORT}:80"
     depends_on:
       - mysql
+    networks:
+      - mysql_network
 
 volumes:
   mysql_data:
@@ -35,3 +38,7 @@ volumes:
       type: none
       o: bind
       device: ${MYSQL_MOUNT_DIR}
+
+networks:
+  mysql_network:
+    driver: bridge
