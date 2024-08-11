@@ -1,0 +1,31 @@
+name: Deploy phpMyAdmin
+
+on:
+  push:
+    branches:
+      - devops-database-phpadmin-deploy
+
+jobs:
+  deploy-phpmyadmin:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Copy source code to server
+      run: |
+        scp -o StrictHostKeyChecking=no -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/path/to/phpmyadmin/source/
+
+    - name: Deploy to Ubuntu Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /path/to/phpmyadmin/source/.docker/phpmyadmin
+          docker-compose down
+          docker rmi $(docker images -q phpmyadmin) || true
+          docker-compose build
+          docker-compose up -d
