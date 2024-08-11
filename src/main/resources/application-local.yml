@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://103.27.236.132:3306/devhub_web_app?useSSL=false&serverTimezone=UTC
+    username: cxluser
+    password: Thanh0974135042!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # Tự động cập nhật cấu trúc bảng dựa trên entity
+    show-sql: true  # Hiển thị SQL câu lệnh trong log
+    properties:
+      hibernate:
+        format_sql: true  # Định dạng SQL câu lệnh
+        use_sql_comments: true  # Sử dụng comment trong SQL
+        generate_statistics: true  # Bật thống kê Hibernate
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG  # Hiển thị câu lệnh SQL
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Hiển thị giá trị bind
