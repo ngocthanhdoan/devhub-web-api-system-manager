@@ -28,4 +28,5 @@ jobs:
           docker-compose down
           docker rmi $(docker images -q mysql) || true
           docker-compose build
-          docker-compose up -d
+          docker-compose up -
+
