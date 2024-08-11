@@ -42,3 +42,4 @@ volumes:
 networks:
   mysql_network:
     driver: bridge
+    
