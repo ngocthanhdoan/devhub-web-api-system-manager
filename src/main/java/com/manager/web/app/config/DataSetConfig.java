@@ -17,10 +17,15 @@ public class DataSetConfig {
 
     @Bean
     public Sql2o sql2o() {
+       try{
         String dbUrl = env.getProperty("spring.datasource.url");
         String dbUsername = env.getProperty("spring.datasource.username");
         String dbPassword = env.getProperty("spring.datasource.password");
         return new Sql2o(dbUrl, dbUsername, dbPassword);
+       }catch(Exception e){
+        
+       }
+       return null;
     }
 }
 
