@@ -1,4 +1,4 @@
-name: Deploy Spring Boot Application To STAG
+name: Deploy Spring Boot Application To PROD
 
 on:
   push:
