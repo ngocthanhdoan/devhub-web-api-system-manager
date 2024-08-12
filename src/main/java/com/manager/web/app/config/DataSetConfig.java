@@ -4,7 +4,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.sql2o.Sql2o;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Component
 public class DataSetConfig {
@@ -15,7 +15,7 @@ public class DataSetConfig {
         this.env = env;
     }
 
-    @Bean
+//    @Bean
     public Sql2o sql2o() {
        try{
         String dbUrl = env.getProperty("spring.datasource.url");
