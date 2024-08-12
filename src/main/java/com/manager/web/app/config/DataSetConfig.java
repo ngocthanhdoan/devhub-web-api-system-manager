@@ -3,7 +3,9 @@ package com.manager.web.app.config;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.sql2o.Sql2o;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 @Component
 public class DataSetConfig {
 
