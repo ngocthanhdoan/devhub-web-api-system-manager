@@ -25,5 +25,5 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Hiển thị giá trị bind
 springdoc:
   swagger-ui:
-    url: /openapi.json
+    url: /v2/api/openapi.json
     enabled: true
