@@ -1,31 +1,23 @@
 package com.manager.web.app.config;
 
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.sql2o.Sql2o;
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+
+import com.manager.web.app.abs.HibernateUtil;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 @Component
 public class DataSetConfig {
 
-    private final Environment env;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public DataSetConfig(Environment env) {
-        this.env = env;
-    }
-
-//    @Bean
-    public Sql2o sql2o() {
-       try{
-        String dbUrl = env.getProperty("spring.datasource.url");
-        String dbUsername = env.getProperty("spring.datasource.username");
-        String dbPassword = env.getProperty("spring.datasource.password");
-        return new Sql2o(dbUrl, dbUsername, dbPassword);
-       }catch(Exception e){
-        
-       }
-       return null;
+    @Bean
+    public HibernateUtil dataSet() {
+        HibernateUtil dataSet = new HibernateUtil();
+        dataSet.setEntityManager(entityManager);
+        return dataSet;
     }
 }
 

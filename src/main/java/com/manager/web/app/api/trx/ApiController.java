@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.web.app.abs.AbstractAnnotatedClass;
-import com.manager.web.app.abs.DataSet;
+import com.manager.web.app.abs.HibernateUtil;
 import com.manager.web.app.annotation.ParamName;
 import com.manager.web.app.api.repository.DevhubApiCodeMapRepository;
 import com.manager.web.app.api.repository.DevhubApiMappingRepository;
@@ -31,10 +31,10 @@ public class ApiController {
 	private DevhubApiCodeMapRepository apiCodeMapRepository;
 	@Autowired
 	private MetricsLogger metricsLogger;
-    private final DataSet dataSet;
+    private final HibernateUtil dataSet;
 
     @Autowired
-    public ApiController(DataSet dataSet) {
+    public ApiController(HibernateUtil dataSet) {
         this.dataSet = dataSet;
     }
     
@@ -55,13 +55,13 @@ public class ApiController {
 				if ("sql_query".equals(callType)) {
 					// Use DataSet to execute SQL query
 					DevhubApiCodeMap codeMap = apiCodeMapRepository.findById(mapping.getCode_map_id()).orElse(null);
-					dataSet.setParameter(queryParameters);
+					dataSet.setParameters(queryParameters);
 
 					result = dataSet.searchAndRetrieve(codeMap.getCodeMapSql());
 				} else if ("sql_update".equals(callType)) {
 					// Use DataSet to execute SQL update
 					DevhubApiCodeMap codeMap = apiCodeMapRepository.findById(mapping.getCode_map_id()).orElse(null);
-					dataSet.setParameter(queryParameters);
+					dataSet.setParameters(queryParameters);
 
 					int updateCount = dataSet.update(codeMap.getCodeMapSql());
 
