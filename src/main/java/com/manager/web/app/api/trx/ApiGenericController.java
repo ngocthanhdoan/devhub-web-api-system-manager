@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -145,7 +146,8 @@ public class ApiGenericController {
 		}
 		return repository;
 	}
-	@GetMapping("/openapi.json")
+	@GetMapping("/api-doc")
+	@ResponseBody
     public String getOpenApiDocumentation() throws Exception {
         java.util.List<Map<String, String>> apiList = java.util.List.of(
             Map.of("endpoint", "/users", "method", "GET", "description", "Retrieve all users", "parameters", "None"),
