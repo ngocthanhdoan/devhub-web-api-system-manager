@@ -23,3 +23,7 @@ logging:
   level:
     org.hibernate.SQL: DEBUG  # Hiển thị câu lệnh SQL
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Hiển thị giá trị bind
+springdoc:
+  swagger-ui:
+    url: /openapi.json
+    enabled: true
