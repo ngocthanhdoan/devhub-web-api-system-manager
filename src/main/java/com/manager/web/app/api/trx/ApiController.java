@@ -18,7 +18,7 @@ import com.manager.web.app.config.MetricsLogger;
 import com.manager.web.app.plugins.returnObject;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/v1")
 public class ApiController {
 	public String myMethod1(@ParamName("username") String user, @ParamName("password") int pass) {
 

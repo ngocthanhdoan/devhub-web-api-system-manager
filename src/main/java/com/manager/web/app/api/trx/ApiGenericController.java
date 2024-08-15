@@ -33,7 +33,7 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 
 @RestController
-@RequestMapping("/v2/api")
+@RequestMapping("/v2")
 public class ApiGenericController {
 
 	@Autowired
