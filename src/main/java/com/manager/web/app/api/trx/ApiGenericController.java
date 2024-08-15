@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
 
 @RestController
 @RequestMapping("/v2/api")
@@ -140,4 +145,47 @@ public class ApiGenericController {
 		}
 		return repository;
 	}
+	@GetMapping("/openapi.json")
+    public String getOpenApiDocumentation() throws Exception {
+        java.util.List<Map<String, String>> apiList = java.util.List.of(
+            Map.of("endpoint", "/users", "method", "GET", "description", "Retrieve all users", "parameters", "None"),
+            Map.of("endpoint", "/users/{id}", "method", "GET", "description", "Retrieve user by ID", "parameters", "id: integer")
+        );
+
+        OpenAPI openAPI = new OpenAPI()
+            .info(new Info().title("Dynamic API Documentation").version("1.0"));
+
+        Paths paths = new Paths();
+
+        for (Map<String, String> api : apiList) {
+            String endpoint = api.get("endpoint");
+            String method = api.get("method");
+            String description = api.get("description");
+            String parameters = api.get("parameters");
+
+            io.swagger.v3.oas.models.PathItem pathItem = new io.swagger.v3.oas.models.PathItem()
+                .description(description);
+
+            io.swagger.v3.oas.models.Operation operation = new io.swagger.v3.oas.models.Operation()
+                .summary(description)
+                .description(parameters);
+
+            switch (method.toUpperCase()) {
+                case "GET":
+                    pathItem.get(operation);
+                    break;
+                case "POST":
+                    pathItem.post(operation);
+                    break;
+                // Add other methods as needed
+            }
+
+            paths.addPathItem(endpoint, pathItem);
+        }
+
+        openAPI.setPaths(paths);
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(openAPI);
+    }
 }
