@@ -1,13 +1,17 @@
 package com.manager.web.app.api.trx;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 @RequestMapping("/v2/api")
 public class ApiGenericController {
@@ -26,13 +33,63 @@ public class ApiGenericController {
 	@Autowired
 	private org.springframework.context.ApplicationContext applicationContext;
 
+	 @Autowired
+    private ObjectMapper objectMapper;
+	private String formatKey(String key) {
+        // Loại bỏ "Repositories" và upper chữ cái đầu tiên của key
+        key = key.replace("Repository", "");
+        if (key.isEmpty()) {
+            return key;
+        }
+        return key.substring(0, 1).toUpperCase() + key.substring(1);
+    }
 	@GetMapping("/list")
-	public Map<String, String> getRepositories() {
+	public Map<Object, Object> getRepositories() {
 		Map<String, Repository> repositories = applicationContext.getBeansOfType(Repository.class);
-		return repositories.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getClass().getName()));
-	}
 
+		// return repositories.entrySet().stream()
+		// 		.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getClass().getName()));
+		return repositories.entrySet().stream().collect(Collectors.toMap(
+			entry -> formatKey(entry.getKey()), // Format key như bạn đã yêu cầu
+			entry -> {
+				try {
+					// Lấy class theo tên đã được format
+					Class<?> clazz = Class.forName("com.manager.web.app.api.vo." + formatKey(entry.getKey()));
+					
+					// Tạo instance của class
+					//Object instance = clazz.getDeclaredConstructor().newInstance();
+
+					// Chuyển đổi đối tượng thành chuỗi JSON
+					//return objectMapper.writeValueAsString(instance);
+				return getFieldTypes(clazz);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return "{}"; // Trả về chuỗi JSON rỗng nếu có lỗi
+				}
+			}
+	));
+	}
+	 /**
+     * Tạo một Map ánh xạ tên các trường (key) với kiểu dữ liệu của chúng (value) của một lớp.
+     * @param clazz lớp cần xử lý
+     * @return một Map chứa tên trường và kiểu dữ liệu của chúng
+     */
+    public static Map<String, Class<?>> getFieldTypes(Class<?> clazz) {
+        Map<String, Class<?>> fieldTypes = new HashMap<>();
+        
+        // Lấy tất cả các trường (fields) của lớp
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            // Lấy tên trường và kiểu dữ liệu của nó
+            String fieldName = field.getName();
+            Class<?> fieldType = field.getType();
+            
+            // Thêm vào Map
+            fieldTypes.put(fieldName, fieldType);
+        }
+        
+        return fieldTypes;
+    }
 	@GetMapping("/{entityName}")
 	public Page<?> listEntities(@PathVariable String entityName,
 			@RequestParam(value = "page", defaultValue = "0") int page,
@@ -51,7 +108,13 @@ public class ApiGenericController {
 		JpaRepository<T, Serializable> repository = (JpaRepository<T, Serializable>) getRepository(entityName);
 		return repository.save(entity);
 	}
-
+	@GetMapping("/{entityName}/{id}")
+	public Optional<?> listEntities(@PathVariable String entityName,@PathVariable Serializable id,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) throws Exception {
+		JpaRepository<?, Serializable> repository = (JpaRepository<?, Serializable>) getRepository(entityName);
+		return repository.findById(id);
+	}
 	@PutMapping("/{entityName}/{id}")
 	public <T> T updateEntity(@PathVariable String entityName, @PathVariable Serializable id,
 			@RequestBody T updatedEntity) throws Exception {
@@ -69,7 +132,6 @@ public class ApiGenericController {
 		}
 		repository.deleteById(id);
 	}
-
 	private JpaRepository<?, Serializable> getRepository(String entityName) throws Exception {
 		Map<String, Repository> repositories = applicationContext.getBeansOfType(Repository.class);
 		JpaRepository<?, Serializable> repository = (JpaRepository<?, Serializable>) repositories.get(entityName);
