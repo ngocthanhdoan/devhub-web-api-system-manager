@@ -28,3 +28,13 @@ export PATH=$JAVA_HOME/bin:$PATH
 source ~/.bashrc
 ```
 
+### kiểm tra đang chạy trên port 8080
+
+```
+lsof -i :8080
+```
+
+###
+```
+kill
+```
