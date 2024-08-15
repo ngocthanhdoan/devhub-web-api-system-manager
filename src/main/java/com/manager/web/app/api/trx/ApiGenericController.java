@@ -1,6 +1,8 @@
 package com.manager.web.app.api.trx;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,11 +57,11 @@ public class ApiGenericController {
 					Class<?> clazz = Class.forName("com.manager.web.app.api.vo." + formatKey(entry.getKey()));
 					
 					// Tạo instance của class
-					Object instance = clazz.getDeclaredConstructor().newInstance();
+					//Object instance = clazz.getDeclaredConstructor().newInstance();
 
 					// Chuyển đổi đối tượng thành chuỗi JSON
 					//return objectMapper.writeValueAsString(instance);
-				return instance;
+				return getFieldTypes(clazz);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return "{}"; // Trả về chuỗi JSON rỗng nếu có lỗi
@@ -67,6 +69,27 @@ public class ApiGenericController {
 			}
 	));
 	}
+	 /**
+     * Tạo một Map ánh xạ tên các trường (key) với kiểu dữ liệu của chúng (value) của một lớp.
+     * @param clazz lớp cần xử lý
+     * @return một Map chứa tên trường và kiểu dữ liệu của chúng
+     */
+    public static Map<String, Class<?>> getFieldTypes(Class<?> clazz) {
+        Map<String, Class<?>> fieldTypes = new HashMap<>();
+        
+        // Lấy tất cả các trường (fields) của lớp
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            // Lấy tên trường và kiểu dữ liệu của nó
+            String fieldName = field.getName();
+            Class<?> fieldType = field.getType();
+            
+            // Thêm vào Map
+            fieldTypes.put(fieldName, fieldType);
+        }
+        
+        return fieldTypes;
+    }
 	@GetMapping("/{entityName}")
 	public Page<?> listEntities(@PathVariable String entityName,
 			@RequestParam(value = "page", defaultValue = "0") int page,
