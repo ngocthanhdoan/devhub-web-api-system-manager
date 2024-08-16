@@ -7,18 +7,19 @@ import com.manager.web.app.abs.HibernateUtil;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
 @Component
 public class DataSetConfig {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    @Bean
-    public HibernateUtil dataSet() {
-        HibernateUtil dataSet = new HibernateUtil();
-        dataSet.setEntityManager(entityManager);
-        return dataSet;
-    }
+	@Bean
+	public HibernateUtil dataSet() {
+		HibernateUtil dataSet = new HibernateUtil();
+		dataSet.setEntityManager(entityManager);
+		return dataSet;
+	}
 }
 
 // import org.sql2o.Sql2o;
